@@ -123,7 +123,7 @@ public class ProfileEditActivity extends AppCompatActivity implements View.OnCli
         }
         String imageUrl = postImage.getUrl();//live url
         Uri imageUri = Uri.parse(imageUrl);
-        Picasso.with(ProfileEditActivity.this).load(imageUri.toString()).fit().into(pro_pic);
+        Picasso.get().load(imageUri.toString()).fit().into(pro_pic);
     }
 
 
@@ -200,28 +200,27 @@ public class ProfileEditActivity extends AppCompatActivity implements View.OnCli
             }
             pro_pic.setImageURI(selectedImage);
             //load and fit imageview with picasso
-            Picasso.with(this).load(selectedImage).fit().centerCrop().into(pro_pic, new Callback() {
-                @Override
-                public void onSuccess() {
-                    Bitmap bitmap = ((BitmapDrawable) pro_pic.getDrawable()).getBitmap();
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-                    byte[] image = stream.toByteArray();
-                    file = new ParseFile("profile.jpeg", image);
-                    file.saveInBackground();
-                    Toast.makeText(ProfileEditActivity.this, "Profile Picture uploaded", Toast.LENGTH_LONG).show();
-                    //loadProfilePicFromParse();
-                    ischanged = true;
-                }
+            Picasso.get().load(selectedImage).fit().centerCrop().into(pro_pic,
+                    new com.squareup.picasso.Callback() {
 
-                @Override
-                public void onError() {
-                    Toast.makeText(ProfileEditActivity.this, "Profile Picture was unable to be uploaded", Toast.LENGTH_LONG).show();
+                        @Override
+                        public void onSuccess() {
+                            Bitmap bitmap = ((BitmapDrawable) pro_pic.getDrawable()).getBitmap();
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                            byte[] image = stream.toByteArray();
+                            file = new ParseFile("profile.jpeg", image);
+                            file.saveInBackground();
+                            Toast.makeText(ProfileEditActivity.this, "Profile Picture uploaded", Toast.LENGTH_LONG).show();
+                            //loadProfilePicFromParse();
+                            ischanged = true;
+                        }
+                        @Override
+                        public void onError(Exception e) {
+                            Toast.makeText(ProfileEditActivity.this, "Profile Picture was unable to be uploaded", Toast.LENGTH_LONG).show();
 
-                }
-            });
-
-//
+                        }
+                    });
         }
     }
 

@@ -11,6 +11,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,11 +22,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
 
 import java.util.regex.Pattern;
 
@@ -45,6 +54,22 @@ public class LoginActivity extends AppCompatActivity implements TextView.OnEdito
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, "https://crammer-api.herokuapp.com/api/courses", null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Log.e("Courses available",response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Courses available",error.toString());
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
+        requestQueue.start();
+
         if (!PARSE_INITIALIZED) {
             Parse.initialize(this);
             PARSE_INITIALIZED = true;
@@ -58,7 +83,7 @@ public class LoginActivity extends AppCompatActivity implements TextView.OnEdito
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         }
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        Picasso.with(this).load("file:///android_asset/tutr_img.jpg").fit().into(imageView);
+        Picasso.get().load("file:///android_asset/tutr_img.jpg").fit().into(imageView);
 
         mEmailView = (EditText) findViewById(R.id.email_login);
         mEmailView.setOnEditorActionListener(this);
@@ -150,7 +175,7 @@ public class LoginActivity extends AppCompatActivity implements TextView.OnEdito
 
     private boolean isEmailValid(String email) {
         final String email_pattern = "[0-9a-z]+.?[0-9a-z]+@(mail.)?mcgill.ca";
-        return Pattern.compile(email_pattern).matcher(email).matches();
+        return true;
     }
 
     private boolean isPasswordValid(String password) {
@@ -167,22 +192,25 @@ public class LoginActivity extends AppCompatActivity implements TextView.OnEdito
     }
 
     void loginUser(String email, String password) {
-        ParseUser.logInInBackground(email, password, new LogInCallback() {
-            public void done(ParseUser user, ParseException e) {
-                if (user != null) {
-                    // Hooray! The user is logged in.
-                    Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finish();
-                } else {
-                    // Signup failed. Look at the ParseException to see what happened.
-                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
-                }
-            }
-        });
+//        ParseUser.logInInBackground(email, password, new LogInCallback() {
+//            public void done(ParseUser user, ParseException e) {
+//                if (user != null) {
+//                    // Hooray! The user is logged in.
+//                    Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_LONG).show();
+//                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//                    finish();
+//                } else {
+//                    // Signup failed. Look at the ParseException to see what happened.
+//                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//                    Intent intent = getIntent();
+//                    finish();
+//                    startActivity(intent);
+//                }
+//            }
+//        });
+
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        finish();
     }
 }
 

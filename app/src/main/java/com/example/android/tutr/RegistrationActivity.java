@@ -46,7 +46,7 @@ public class RegistrationActivity extends AppCompatActivity implements EditText.
 
         // load an image to the image view
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        Picasso.with(this).load("file:///android_asset/tutr_img.jpg").fit().into(imageView);
+        Picasso.get().load("file:///android_asset/tutr_img.jpg").fit().into(imageView);
 
         // declare all the edit text : email, name, password
         // and set the to answer on editActionListenner from the pop up keyboard

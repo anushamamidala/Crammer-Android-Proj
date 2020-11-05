@@ -137,7 +137,7 @@ public class ViewTutor extends AppCompatActivity {
         }
         String imageUrl = postImage.getUrl();//live url
         Uri imageUri = Uri.parse(imageUrl);
-        Picasso.with(this).load(imageUri.toString()).fit().into(tutor_pic);
+        Picasso.get().load(imageUri.toString()).fit().into(tutor_pic);
     }
 
     @Override
